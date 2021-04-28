@@ -45,7 +45,9 @@ const config = {
       packageVersion: process.env.PACKAGE_VERSION || 'X-Package-Version',
       nodeVersion: process.env.NODE_VERSION || 'X-Node-Version'
     },
-    geekJokesApi: process.env.API_RANDOM_WEETS
+    geekJokesApi: {
+      urlApi: process.env.API_RANDOM_WEETS
+    }
   }
 };
 
