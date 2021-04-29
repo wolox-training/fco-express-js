@@ -13,9 +13,8 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      lastName: {
+      last_name: {
         allowNull: false,
-        field: 'last_name',
         type: Sequelize.STRING
       },
       email: {
@@ -27,14 +26,12 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
-        field: 'created_at',
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
-        field: 'updated_at',
         type: Sequelize.DATE
       }
     });
