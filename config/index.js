@@ -44,6 +44,9 @@ const config = {
       apiDate: process.env.API_DATE || 'X-API-Date',
       packageVersion: process.env.PACKAGE_VERSION || 'X-Package-Version',
       nodeVersion: process.env.NODE_VERSION || 'X-Node-Version'
+    },
+    geekJokesApi: {
+      urlApi: process.env.API_RANDOM_WEETS
     }
   }
 };
