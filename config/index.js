@@ -47,27 +47,6 @@ const config = {
     },
     geekJokesApi: {
       urlApi: process.env.API_RANDOM_WEETS
-    },
-    validationSchemas: {
-      user: {
-        name: {
-          minLength: 3,
-          maxLength: 30
-        },
-        lastName: {
-          minLength: 3,
-          maxLength: 30
-        }
-      },
-      credential: {
-        email: {
-          woloxDomainRegex: /@wolox.com?/i
-        },
-        password: {
-          minLength: 8,
-          maxLength: 15
-        }
-      }
     }
   }
 };

@@ -1,5 +1,14 @@
-const { email, password } = require('../../config').common.validationSchemas.credential;
 const { existsUserEmail } = require('../services/users');
+
+const { email, password } = {
+  email: {
+    woloxDomainRegex: /@wolox.co(m.(ar|mx))?/i
+  },
+  password: {
+    minLength: 8,
+    maxLength: 15
+  }
+};
 
 exports.credentialSchema = {
   email: {

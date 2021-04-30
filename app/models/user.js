@@ -1,5 +1,4 @@
 const { hashText } = require('../utils/crypto');
-const { convertKeysFromCamelToSnake } = require('../utils/objects');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -30,14 +29,6 @@ module.exports = (sequelize, DataTypes) => {
     // eslint-disable-next-line require-atomic-updates
     user.password = await hashText(user.password);
   });
-
-  User.prototype.toJSON = function toJSON() {
-    let user = { ...this.get() };
-    delete user.password;
-    user = convertKeysFromCamelToSnake(user);
-
-    return user;
-  };
 
   return User;
 };

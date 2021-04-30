@@ -1,4 +1,13 @@
-const { name, lastName } = require('../../config').common.validationSchemas.user;
+const { name, lastName } = {
+  name: {
+    minLength: 3,
+    maxLength: 30
+  },
+  lastName: {
+    minLength: 3,
+    maxLength: 30
+  }
+};
 
 exports.userSchema = {
   name: {
