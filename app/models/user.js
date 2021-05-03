@@ -1,3 +1,5 @@
+const { hashText } = require('../utils/crypto');
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'user',
@@ -20,10 +22,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT
       }
     },
-    {
-      underscored: true
-    }
+    { underscored: true }
   );
+
+  User.beforeSave(async user => {
+    // eslint-disable-next-line require-atomic-updates
+    user.password = await hashText(user.password);
+  });
 
   return User;
 };
