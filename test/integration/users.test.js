@@ -8,7 +8,7 @@ const server = request(app);
 
 describe('users endpoints', () => {
   describe('signUp endpoint', () => {
-    test('should create an user successfully', async () => {
+    test('should create an user successfully', async done => {
       const res = await server.post('/users').send(userMock);
 
       expect(res.statusCode).toBe(201);
@@ -19,9 +19,11 @@ describe('users endpoints', () => {
         email: expect.any(String),
         created_at: expect.any(String)
       });
+
+      done();
     });
 
-    test('should fail when mail is wrong', async () => {
+    test('should fail when mail is wrong', async done => {
       const res = await server.post('/users').send({ ...userMock, email: 'test@mock.com' });
 
       expect(res.statusCode).toBe(400);
@@ -29,6 +31,8 @@ describe('users endpoints', () => {
         internal_code: BAD_REQUEST_ERROR,
         message: { email: expect.any(Object) }
       });
+
+      done();
     });
 
     test("should fail when password doesn't meet the restrictions", async () => {
@@ -41,7 +45,7 @@ describe('users endpoints', () => {
       });
     });
 
-    test("should fail when the required fields aren't passed", async () => {
+    test("should fail when the required fields aren't passed", async done => {
       const res = await server.post('/users');
 
       expect(res.statusCode).toBe(400);
@@ -54,6 +58,8 @@ describe('users endpoints', () => {
           password: expect.any(Object)
         }
       });
+
+      done();
     });
   });
 });
