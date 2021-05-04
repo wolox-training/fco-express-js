@@ -7,7 +7,7 @@ const loggerPath = 'controller:users';
 
 exports.signUp = async (req, res, next) => {
   try {
-    logger.info(`${loggerPath}:signUp:starting`);
+    logger.info(`${loggerPath}: starting signUp method with the next body ${JSON.stringify(req.body)}`);
     const { body: userData } = req;
     const createdUser = await signUp(userData);
     return res.status(201).send(mapToSerializer(createdUser, signUpSerializer));
