@@ -1,5 +1,5 @@
 # WTraining
-
+[![Build Status](https://travis-ci.org/wolox-training/fco-express-js.svg?branch=master)](https://travis-ci.org/wolox-training/fco-express-js)
 ## First steps
 
 #### Installing node

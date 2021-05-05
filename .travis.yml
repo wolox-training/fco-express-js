@@ -3,10 +3,15 @@ language: node_js
 node_js:
   - "10.14.1"
 
+cache:
+  directories:
+    - node_modules
+    - ~/.npm
+
 sudo: true
 
 env:
-  - CXX=g++-4.8 NODE_ENV=testing
+  - CXX=g++-4.8 NODE_ENV=testing DB_NAME_TEST=db_WTraining_test
 addons:
   apt:
     sources:
@@ -18,5 +23,10 @@ services:
   - postgresql
 
 before_script:
-  - psql -c "CREATE DATABASE bookstest;" -U postgres
+  - psql -c "CREATE DATABASE $DB_NAME_TEST;" -U postgres
   - npm run migrations-test
+
+jobs:
+  include:
+    - stage: integration
+      script: npm test
