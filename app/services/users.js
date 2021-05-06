@@ -2,6 +2,7 @@ const { databaseError, badRequestError } = require('../errors');
 const logger = require('../logger');
 const { user: UserModel } = require('../models');
 const { signPayload, jwtExpirationTimes } = require('../utils/jwt');
+const { getPagination } = require('../utils/pagination');
 
 const loggerPath = 'service:users';
 
@@ -57,5 +58,16 @@ exports.findByEmail = async email => {
   } catch (error) {
     logger.error(`${loggerPath}:findByEmail - database: ${error.message}`);
     throw databaseError('database error in findByEmail');
+  }
+};
+
+exports.getUsers = async (page, limit) => {
+  try {
+    const users = await UserModel.findAll({ ...getPagination(page, limit) });
+
+    return users;
+  } catch (error) {
+    logger.error(`${loggerPath}:getUsers - database: ${error.message}`);
+    throw databaseError('database error in getUsers');
   }
 };

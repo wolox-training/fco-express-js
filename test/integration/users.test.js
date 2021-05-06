@@ -85,7 +85,7 @@ describe('users endpoints', () => {
       });
     });
 
-    test("should fail when password isn't correct", async done => {
+    test("should fail when password isn't correct", async () => {
       const { email } = userMock;
 
       const res = await server.post('/users/sessions').send({ email, password: '00000000' });
@@ -94,6 +94,41 @@ describe('users endpoints', () => {
       expect(res.body).toEqual({
         internal_code: expect.any(String),
         message: expect.any(String)
+      });
+    });
+  });
+
+  describe('getUsers endpoint', () => {
+    test('should return users succesfully without query params', async () => {
+      const res = await server.get('/users');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        users: expect.any(Array)
+      });
+    });
+
+    test('should return users succesfully with one query param', async () => {
+      const limit = 2;
+      const res = await server.get('/users').query({ limit });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        users: expect.any(Array)
+      });
+      expect(res.body.users.length).toBeLessThanOrEqual(limit);
+    });
+
+    test("should fail when page or limit query params aren't integers", async done => {
+      const res = await server.get('/users').query({ page: 'a', limit: 'b' });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toEqual({
+        message: {
+          page: expect.any(Object),
+          limit: expect.any(Object)
+        },
+        internal_code: expect.any(String)
       });
 
       done();
