@@ -1,9 +1,5 @@
 const { sign } = require('jsonwebtoken');
 
-const { jwtSecret } = require('../../config').common.api;
+const { secret } = require('../../config').common.session;
 
-exports.jwtExpirationTimes = {
-  accessToken: 60 * 15
-};
-
-exports.signPayload = (payload, opts) => sign(payload, jwtSecret, opts);
+exports.signPayload = (payload, opts) => sign(payload, secret, opts);

@@ -34,12 +34,14 @@ const config = {
     api: {
       bodySizeLimit: process.env.API_BODY_SIZE_LIMIT,
       parameterLimit: process.env.API_PARAMETER_LIMIT,
-      port: process.env.PORT,
-      jwtSecret: process.env.JWT_SECRET
+      port: process.env.PORT
     },
     session: {
       header_name: 'authorization',
-      secret: process.env.NODE_API_SESSION_SECRET
+      secret: process.env.NODE_API_SESSION_SECRET,
+      times: {
+        accessTokenExpirationTime: process.env.ACCESS_TOKEN_EXPIRATION_TIME
+      }
     },
     headers: {
       apiDate: process.env.API_DATE || 'X-API-Date',
