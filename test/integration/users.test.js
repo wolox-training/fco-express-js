@@ -99,8 +99,31 @@ describe('users endpoints', () => {
   });
 
   describe('getUsers endpoint', () => {
-    test('should return users succesfully without query params', async () => {
+    let accessToken = '';
+
+    beforeAll(async () => {
+      const { email, password } = userMock;
+      await server.post('/users').send(userMock);
+
+      const res = await server.post('/users/sessions').send({ email, password });
+
+      accessToken = res.body.access_token;
+    });
+
+    test("should fail when Authorization header isn't passed", async () => {
       const res = await server.get('/users');
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toEqual({
+        message: {
+          authorization: expect.any(Object)
+        },
+        internal_code: expect.any(String)
+      });
+    });
+
+    test('should return users succesfully without query params', async () => {
+      const res = await server.get('/users').set({ Authorization: accessToken });
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual({
@@ -110,7 +133,10 @@ describe('users endpoints', () => {
 
     test('should return users succesfully with one query param', async () => {
       const limit = 2;
-      const res = await server.get('/users').query({ limit });
+      const res = await server
+        .get('/users')
+        .query({ limit })
+        .set({ Authorization: accessToken });
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual({
@@ -120,7 +146,10 @@ describe('users endpoints', () => {
     });
 
     test("should fail when page or limit query params aren't integers", async done => {
-      const res = await server.get('/users').query({ page: 'a', limit: 'b' });
+      const res = await server
+        .get('/users')
+        .query({ page: 'a', limit: 'b' })
+        .set({ Authorization: accessToken });
 
       expect(res.statusCode).toBe(400);
       expect(res.body).toEqual({

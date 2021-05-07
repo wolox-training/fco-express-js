@@ -9,4 +9,4 @@ exports.signUpDto = checkSchema({ ...userSchema, ...credentialSchema }, ['body']
 
 exports.signInDto = checkSchema({ ...credentialSchema }, ['body']);
 
-exports.getUsersDto = checkSchema({ ...paginationSchema, ...authSchema }, ['query', 'headers']);
+exports.getUsersDto = checkSchema({ ...paginationSchema, ...authSchema });

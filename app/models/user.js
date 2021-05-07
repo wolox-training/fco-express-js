@@ -1,4 +1,4 @@
-const { hashText, isOriginalText } = require('../utils/crypto');
+const { hashText } = require('../utils/crypto');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -29,11 +29,6 @@ module.exports = (sequelize, DataTypes) => {
     // eslint-disable-next-line require-atomic-updates
     user.password = await hashText(user.password);
   });
-
-  User.prototype.comparePassword = async function comparePassword(password) {
-    const isValid = await isOriginalText(password, this.password);
-    return isValid;
-  };
 
   return User;
 };
