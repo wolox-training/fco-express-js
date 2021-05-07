@@ -12,14 +12,9 @@ const loggerPath = 'controller:users';
 exports.signUp = async (req, res, next) => {
   try {
     const { body: userData } = req;
-    const { email } = userData;
     logger.info(
       `${loggerPath}:signUp: starting signUp method with the next body ${JSON.stringify(userData)}`
     );
-
-    const foundUser = await findUserByEmail(email);
-
-    if (foundUser) throw badRequestError('email already exists');
 
     const createdUser = await createUser(userData);
     return res.status(201).send(mapToSerializer(createdUser, signUpSerializer));
