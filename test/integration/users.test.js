@@ -7,8 +7,8 @@ const { userMock } = require('../mocks/users');
 const server = request(app);
 
 describe('users endpoints', () => {
-  describe('signUp endpoint', () => {
-    test('should create an user successfully', async () => {
+  describe('signUp regular endpoint', () => {
+    test('should create a regular user successfully', async () => {
       const res = await server.post('/users').send(userMock);
 
       expect(res.statusCode).toBe(201);
@@ -21,7 +21,7 @@ describe('users endpoints', () => {
       });
     });
 
-    test('should fail when mail is wrong', async () => {
+    test('should fail when email is wrong', async () => {
       const res = await server.post('/users').send({ ...userMock, email: 'test@mock.com' });
 
       expect(res.statusCode).toBe(400);
@@ -53,6 +53,53 @@ describe('users endpoints', () => {
           email: expect.any(Object),
           password: expect.any(Object)
         }
+      });
+    });
+  });
+
+  describe('signUp admin endpoint', () => {
+    const newAdmin = {
+      name: 'Some',
+      last_name: 'one',
+      email: 'someone@wolox.co',
+      password: 'someonew'
+    };
+
+    test('should create an admin user successfully', async () => {
+      const res = await server.post('/admin/users').send(newAdmin);
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toEqual({
+        id: expect.any(Number),
+        name: expect.any(String),
+        last_name: expect.any(String),
+        email: expect.any(String),
+        created_at: expect.any(String)
+      });
+    });
+
+    test('should change role of user if email already exists', async () => {
+      await server.post('/users').send(userMock);
+      const res = await server.post('/admin/users').send(userMock);
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toEqual({
+        id: expect.any(Number),
+        name: expect.any(String),
+        last_name: expect.any(String),
+        email: expect.any(String),
+        created_at: expect.any(String)
+      });
+    });
+
+    test('should fail when email already exists and already is admin', async () => {
+      await server.post('/admin/users').send(userMock);
+      const res = await server.post('/admin/users').send(userMock);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toEqual({
+        internal_code: BAD_REQUEST_ERROR,
+        message: expect.any(String)
       });
     });
   });
