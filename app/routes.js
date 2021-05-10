@@ -12,5 +12,5 @@ exports.init = app => {
   // user endpoints
   app.post('/users', [signUpDto, validationSchema, existsEmail, mapSnakeToCamel], signUp);
   app.post('/users/sessions', [signInDto, validationSchema], signIn);
-  app.get('/users', [getUsersDto, validationSchema, authenticated], getUsers);
+  app.get('/users', [authenticated, getUsersDto, validationSchema], getUsers);
 };

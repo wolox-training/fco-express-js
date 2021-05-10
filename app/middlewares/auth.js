@@ -1,11 +1,10 @@
-const { badRequestError } = require('../errors');
+const { unauthorizedError } = require('../errors');
 const logger = require('../logger');
 const { verifyToken } = require('../utils/jwt');
 
-exports.authenticated = (req, res, next) => {
+exports.authenticated = (req, _, next) => {
+  const accessToken = req.headers.authorization;
   try {
-    const accessToken = req.headers.authorization;
-
     if (!accessToken) throw new Error();
 
     const payload = verifyToken(accessToken);
@@ -13,11 +12,11 @@ exports.authenticated = (req, res, next) => {
     const { user: id, name } = payload;
     if (!id || !name) throw new Error();
 
-    res.locals.user = { id, name };
+    req.user = { id, name };
 
-    next();
+    return next();
   } catch (error) {
-    logger.error(`jsonwebtoken:validation: ${error.message}`);
-    throw badRequestError('invalid token');
+    logger.info(`jsonwebtoken: ${error.message}`);
+    return next(unauthorizedError('invalid token'));
   }
 };
