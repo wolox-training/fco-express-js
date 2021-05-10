@@ -7,21 +7,22 @@ const loggerPath = 'service:users';
 exports.signUp = async userData => {
   try {
     const createdUser = await UserModel.create(userData);
-    logger.info(`${loggerPath}:signUp:username: ${createdUser.name}`);
+    logger.info(`${loggerPath}:signUp - created user successfully with username: ${createdUser.name}`);
+
     return createdUser;
   } catch (error) {
-    logger.error(`${loggerPath}:signUp:database: ${error.message}`);
-    throw databaseError('database error in SignUp');
+    logger.error(`${loggerPath}:signUp - database: ${error.message}`);
+    throw databaseError('database error in signUp');
   }
 };
 
-exports.existsUserEmail = async email => {
+exports.findUserByEmail = async email => {
   try {
-    const foundEmail = await UserModel.findOne({ where: { email } });
+    const foundUser = await UserModel.findOne({ where: { email } });
 
-    return !!foundEmail;
+    return foundUser;
   } catch (error) {
-    logger.error(`${loggerPath}:existsUserEmail:database: ${error.message}`);
-    throw databaseError('database error in existsUserEmail');
+    logger.error(`${loggerPath}:findByEmail - database: ${error.message}`);
+    throw databaseError('database error in findByEmail');
   }
 };

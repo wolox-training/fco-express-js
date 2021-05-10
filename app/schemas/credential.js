@@ -1,5 +1,3 @@
-const { existsUserEmail } = require('../services/users');
-
 const { email, password } = {
   email: {
     woloxDomainRegex: /@wolox.co(m.(ar|mx))?/i
@@ -13,14 +11,7 @@ const { email, password } = {
 exports.credentialSchema = {
   email: {
     isEmail: { errorMessage: 'invalid email format' },
-    matches: { errorMessage: "email doesn't belong to wolox domain", options: email.woloxDomainRegex },
-    custom: {
-      options: async newEmail => {
-        const foundEmail = await existsUserEmail(newEmail);
-
-        if (foundEmail) throw new Error('email already exist');
-      }
-    }
+    matches: { errorMessage: "email doesn't belong to wolox domain", options: email.woloxDomainRegex }
   },
   password: {
     isAlphanumeric: { errorMessage: 'password must be alphanumeric' },
