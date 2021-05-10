@@ -1,7 +1,7 @@
 const request = require('supertest');
 
 const app = require('../../app');
-const { BAD_REQUEST_ERROR } = require('../../app/errors');
+const { BAD_REQUEST_ERROR, UNAUTHORIZED_ERROR } = require('../../app/errors');
 const { userMock } = require('../mocks/users');
 
 const server = request(app);
@@ -85,7 +85,7 @@ describe('users endpoints', () => {
       });
     });
 
-    test("should fail when password isn't correct", async done => {
+    test("should fail when password isn't correct", async () => {
       const { email } = userMock;
 
       const res = await server.post('/users/sessions').send({ email, password: '00000000' });
@@ -94,6 +94,68 @@ describe('users endpoints', () => {
       expect(res.body).toEqual({
         internal_code: expect.any(String),
         message: expect.any(String)
+      });
+    });
+  });
+
+  describe('getUsers endpoint', () => {
+    let accessToken = '';
+
+    beforeAll(async () => {
+      const { email, password } = userMock;
+      await server.post('/users').send(userMock);
+
+      const res = await server.post('/users/sessions').send({ email, password });
+
+      accessToken = res.body.access_token;
+    });
+
+    test("should fail when Authorization header isn't passed", async () => {
+      const res = await server.get('/users');
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toEqual({
+        message: expect.any(String),
+        internal_code: UNAUTHORIZED_ERROR
+      });
+    });
+
+    test('should return users succesfully without query params', async () => {
+      const res = await server.get('/users').set({ Authorization: accessToken });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        users: expect.any(Array)
+      });
+    });
+
+    test('should return users succesfully with one query param', async () => {
+      const limit = 2;
+      const res = await server
+        .get('/users')
+        .query({ limit })
+        .set({ Authorization: accessToken });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        users: expect.any(Array)
+      });
+      expect(res.body.users.length).toBeLessThanOrEqual(limit);
+    });
+
+    test("should fail when page or limit query params aren't integers", async done => {
+      const res = await server
+        .get('/users')
+        .query({ page: 'a', limit: 'b' })
+        .set({ Authorization: accessToken });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toEqual({
+        message: {
+          page: expect.any(Object),
+          limit: expect.any(Object)
+        },
+        internal_code: expect.any(String)
       });
 
       done();

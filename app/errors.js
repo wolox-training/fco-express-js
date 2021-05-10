@@ -14,3 +14,9 @@ exports.externalApiError = message => internalError(message, exports.EXTERNAL_AP
 
 exports.BAD_REQUEST_ERROR = 'bad_request_error';
 exports.badRequestError = message => internalError(message, exports.BAD_REQUEST_ERROR);
+
+exports.UNAUTHORIZED_ERROR = 'unauthorized_error';
+exports.unauthorizedError = message => internalError(message, exports.UNAUTHORIZED_ERROR);
+
+exports.FORBIDDEN_ERROR = 'forbidden_error';
+exports.forbiddenError = message => internalError(message, exports.FORBIDDEN_ERROR);

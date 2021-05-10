@@ -1,7 +1,7 @@
-const { signUp, findUserByEmail } = require('../services/users');
+const { createUser, findAllUsers, findUserByEmail } = require('../services/users');
 const logger = require('../logger');
 const { mapToSerializer } = require('../utils/objects');
-const { signUpSerializer, signInSerializer } = require('../serializers/users');
+const { signUpSerializer, signInSerializer, getUsersSerializer } = require('../serializers/users');
 const { isOriginalText } = require('../utils/crypto');
 const { signPayload } = require('../utils/jwt');
 const { accessTokenExpirationTime } = require('../../config').common.session.times;
@@ -16,7 +16,7 @@ exports.signUp = async (req, res, next) => {
       `${loggerPath}:signUp: starting signUp method with the next body ${JSON.stringify(userData)}`
     );
 
-    const createdUser = await signUp(userData);
+    const createdUser = await createUser(userData);
     return res.status(201).send(mapToSerializer(createdUser, signUpSerializer));
   } catch (error) {
     return next(error);
@@ -49,6 +49,18 @@ exports.signIn = async (req, res, next) => {
     );
 
     return res.status(200).send(mapToSerializer({ accessToken }, signInSerializer));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getUsers = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+    logger.info(`${loggerPath}:getUsers: starting getUsers method with page: ${page} and limit ${limit}`);
+
+    const users = await findAllUsers(page, limit);
+    return res.status(200).send(mapToSerializer({ users }, getUsersSerializer));
   } catch (error) {
     return next(error);
   }
