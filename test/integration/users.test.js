@@ -1,7 +1,7 @@
 const request = require('supertest');
 
 const app = require('../../app');
-const { BAD_REQUEST_ERROR } = require('../../app/errors');
+const { BAD_REQUEST_ERROR, UNAUTHORIZED_ERROR } = require('../../app/errors');
 const { userMock } = require('../mocks/users');
 
 const server = request(app);
@@ -160,12 +160,10 @@ describe('users endpoints', () => {
     test("should fail when Authorization header isn't passed", async () => {
       const res = await server.get('/users');
 
-      expect(res.statusCode).toBe(400);
+      expect(res.statusCode).toBe(401);
       expect(res.body).toEqual({
-        message: {
-          authorization: expect.any(Object)
-        },
-        internal_code: expect.any(String)
+        message: expect.any(String),
+        internal_code: UNAUTHORIZED_ERROR
       });
     });
 

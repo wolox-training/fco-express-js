@@ -22,5 +22,5 @@ exports.init = app => {
     signUp
   );
   app.post('/users/sessions', [signInDto, validationSchema], signIn);
-  app.get('/users', [getUsersDto, validationSchema, authenticated], getUsers);
+  app.get('/users', [authenticated, getUsersDto, validationSchema], getUsers);
 };
