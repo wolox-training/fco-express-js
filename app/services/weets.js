@@ -1,8 +1,9 @@
 const { default: Axios } = require('axios');
 
 const { urlApi } = require('../../config').common.geekJokesApi;
-const errors = require('../errors');
+const { databaseError, externalApiError } = require('../errors');
 const logger = require('../logger');
+const { weet: WeetModel } = require('../models');
 
 const loggerPath = 'service:weets';
 
@@ -13,6 +14,17 @@ exports.getQuote = async () => {
     return data;
   } catch (error) {
     logger.error(`${loggerPath}:getQuote:error:${error.message}`);
-    throw errors.externalApiError('Have problems with geek jokes external service');
+    throw externalApiError('problems with geek jokes external service');
+  }
+};
+
+exports.createWeet = async weetData => {
+  try {
+    logger.info(`${loggerPath}:createWeet receiving this data: ${JSON.stringify(weetData)}`);
+    const weet = await WeetModel.create(weetData);
+    return weet;
+  } catch (error) {
+    logger.error(`${loggerPath}:createWeet: ${error.message}`);
+    throw databaseError('database error in createWeet');
   }
 };

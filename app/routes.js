@@ -1,5 +1,6 @@
 const { healthCheck } = require('./controllers/healthCheck');
 const { signUp, signIn, getUsers } = require('./controllers/users');
+const { postWeet } = require('./controllers/weets');
 const { signUpDto, signInDto, getUsersDto } = require('./dtos/users');
 const { RolesType } = require('./fixtures/roles');
 const { authenticated } = require('./middlewares/auth');
@@ -23,4 +24,7 @@ exports.init = app => {
   );
   app.post('/users/sessions', [signInDto, validationSchema], signIn);
   app.get('/users', [authenticated, getUsersDto, validationSchema], getUsers);
+
+  // weet endpoints
+  app.post('/weets', [authenticated], postWeet);
 };
