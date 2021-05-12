@@ -65,7 +65,7 @@ describe('weets endpoints', () => {
       });
     });
 
-    test("should fail when page or limit aren't integer", async () => {
+    test("should fail when page or limit aren't integer", async done => {
       const limit = '2a';
       const res = await server
         .get('/weets')
@@ -77,6 +77,8 @@ describe('weets endpoints', () => {
         message: expect.any(Object),
         internal_code: BAD_REQUEST_ERROR
       });
+
+      done();
     });
   });
 });
