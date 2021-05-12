@@ -6,6 +6,8 @@ exports.convertKeysFromSnakeToCamel = obj =>
 exports.convertKeysFromCamelToSnake = obj =>
   Object.keys(obj).reduce((acc, curr) => ({ ...acc, [camelToSnake(curr)]: obj[curr] }), {});
 
+exports.convertValuesToArray = obj => Object.values(obj);
+
 exports.mapToSerializer = (obj, serializer) => {
   const serializedObj = serializer.reduce((acc, curr) => ({ ...acc, [curr]: obj[curr] }), {});
 

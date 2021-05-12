@@ -1,18 +1,19 @@
 const { forbiddenError, unauthorizedError } = require('../errors');
+const { RolesType } = require('../fixtures/roles');
 const logger = require('../logger');
 const { verifyToken } = require('../utils/jwt');
 
-exports.authenticated = (req, _, next) => {
+exports.isAuthenticated = (req, _, next) => {
   const accessToken = req.headers.authorization;
   try {
     if (!accessToken) return next(unauthorizedError('token must be sent'));
 
     const payload = verifyToken(accessToken);
 
-    const { user: id, name } = payload;
-    if (!id || !name) return next(forbiddenError('mistaken token'));
+    const { user: id, name, role } = payload;
+    if (!id || !name || !role) return next(forbiddenError('mistaken token'));
 
-    req.user = { id, name };
+    req.user = { id, name, role };
 
     return next();
   } catch (error) {
@@ -20,3 +21,6 @@ exports.authenticated = (req, _, next) => {
     return next(unauthorizedError('invalid token'));
   }
 };
+
+exports.isAdmin = (req, _, next) =>
+  req.user.role === RolesType.ADMIN ? next() : next(forbiddenError('insufficient permissions'));

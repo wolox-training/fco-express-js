@@ -2,7 +2,7 @@ const { badRequestError } = require('../errors');
 const { RolesType } = require('../fixtures/roles');
 const logger = require('../logger');
 const { signUpSerializer, signInSerializer, getUsersSerializer } = require('../serializers/users');
-const { createUser, findAllUsers, findUserByEmail } = require('../services/users');
+const { createUser, findAllUsers, findUserByEmail, createOrUpdateUser } = require('../services/users');
 const { isOriginalText } = require('../utils/crypto');
 const { signPayload } = require('../utils/jwt');
 const { mapToSerializer } = require('../utils/objects');
@@ -12,31 +12,25 @@ const loggerPath = 'controller:users';
 
 exports.signUp = async (req, res, next) => {
   try {
-    logger.info(`${loggerPath}:signUp: role is ${res.locals.user.role}`);
     const { body: userData } = req;
-    userData.role = res.locals.user.role;
-    logger.info(
-      `${loggerPath}:signUp: starting signUp method with the next body ${JSON.stringify(userData)}`
-    );
+    logger.info(`${loggerPath}:signUp: starting method with the next body ${JSON.stringify(userData)}`);
 
-    const foundUser = await findUserByEmail(userData.email);
-    logger.info(`${loggerPath}:signUp: found user by email is ${foundUser}`);
+    const createdUser = await createUser(userData);
+    return res.status(201).send(mapToSerializer(createdUser, signUpSerializer));
+  } catch (error) {
+    return next(error);
+  }
+};
 
-    const wantToBeAdmin = userData.role === RolesType.ADMIN;
+exports.signUpAdmin = async (req, res, next) => {
+  try {
+    const { body: userData } = req;
+    userData.role = RolesType.ADMIN;
+    logger.info(`${loggerPath}:signUpAdmin: starting method with the next body ${JSON.stringify(userData)}`);
 
-    let user = null;
-
-    if (foundUser) {
-      const isAdmin = foundUser.role === RolesType.ADMIN;
-      if ((isAdmin && wantToBeAdmin) || !wantToBeAdmin) throw badRequestError('email already exists');
-
-      foundUser.role = RolesType.ADMIN;
-      user = await foundUser.save();
-    } else {
-      user = await createUser(userData);
-    }
-
-    return res.status(201).send(mapToSerializer(user, signUpSerializer));
+    const createdOrUpdatedUser = await createOrUpdateUser(userData);
+    logger.info(`${loggerPath}:signUpAdmin: createdOrUpdatedUser - ${JSON.stringify(createdOrUpdatedUser)}`);
+    return res.status(201).send(mapToSerializer(createdOrUpdatedUser, signUpSerializer));
   } catch (error) {
     return next(error);
   }
@@ -55,7 +49,7 @@ exports.signIn = async (req, res, next) => {
     logger.info(`${loggerPath}:signIn - user found by email: ${JSON.stringify(foundUser)}`);
 
     const {
-      dataValues: { id, name, lastName, password: hashedPassword }
+      dataValues: { id, name, lastName, password: hashedPassword, role }
     } = foundUser;
 
     const isValidPassword = await isOriginalText(password, hashedPassword);
@@ -63,7 +57,7 @@ exports.signIn = async (req, res, next) => {
     if (!isValidPassword) throw badRequestError('invalid credentials');
 
     const accessToken = signPayload(
-      { user: id, name: `${name} ${lastName}` },
+      { user: id, name: `${name} ${lastName}`, role },
       { expiresIn: accessTokenExpirationTime }
     );
 
