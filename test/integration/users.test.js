@@ -2,6 +2,8 @@ const request = require('supertest');
 
 const app = require('../../app');
 const { BAD_REQUEST_ERROR, UNAUTHORIZED_ERROR } = require('../../app/errors');
+const { usersSeeds } = require('../../app/seeds/users');
+const { createUser } = require('../../app/services/users');
 const { userMock } = require('../mocks/users');
 
 const server = request(app);
@@ -65,8 +67,21 @@ describe('users endpoints', () => {
       password: 'someonew'
     };
 
+    let accessToken = '';
+
+    beforeAll(async () => {
+      const { email, password } = usersSeeds[0];
+      await createUser(usersSeeds[0]);
+      const res = await server.post('/users/sessions').send({ email, password });
+
+      accessToken = res.body.access_token;
+    });
+
     test('should create an admin user successfully', async () => {
-      const res = await server.post('/admin/users').send(newAdmin);
+      const res = await server
+        .post('/admin/users')
+        .send(newAdmin)
+        .set({ Authorization: accessToken });
 
       expect(res.statusCode).toBe(201);
       expect(res.body).toEqual({
@@ -80,7 +95,10 @@ describe('users endpoints', () => {
 
     test('should change role of user if email already exists', async () => {
       await server.post('/users').send(userMock);
-      const res = await server.post('/admin/users').send(userMock);
+      const res = await server
+        .post('/admin/users')
+        .send(userMock)
+        .set({ Authorization: accessToken });
 
       expect(res.statusCode).toBe(201);
       expect(res.body).toEqual({
@@ -92,14 +110,20 @@ describe('users endpoints', () => {
       });
     });
 
-    test('should fail when email already exists and already is admin', async () => {
+    test('should return user when email already exists and already is admin', async () => {
       await server.post('/admin/users').send(userMock);
-      const res = await server.post('/admin/users').send(userMock);
+      const res = await server
+        .post('/admin/users')
+        .send(userMock)
+        .set({ Authorization: accessToken });
 
-      expect(res.statusCode).toBe(400);
+      expect(res.statusCode).toBe(201);
       expect(res.body).toEqual({
-        internal_code: BAD_REQUEST_ERROR,
-        message: expect.any(String)
+        id: expect.any(Number),
+        name: expect.any(String),
+        last_name: expect.any(String),
+        email: expect.any(String),
+        created_at: expect.any(String)
       });
     });
   });
