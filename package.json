@@ -11,7 +11,7 @@
     "cover": "npm run test -- --coverage",
     "migrations-test": "NODE_ENV=testing npm run migrations",
     "migrations-undo-all-test": "NODE_ENV=testing npm run migrations-undo-all",
-    "test": "NODE_ENV=testing jest --runInBand --forceExit --detectOpenHandles",
+    "test": "NODE_ENV=testing jest --runInBand --forceExit --detectOpenHandles --verbose",
     "test-inspect": "NODE_ENV=testing node --inspect --debug-brk jest",
     "eslint-check": "eslint --print-config .eslintrc.js --ignore-pattern ./.eslintrc.js | eslint-config-prettier-check",
     "lint": "eslint \"**/*.js\" --ignore-pattern ./.eslintrc.js",
