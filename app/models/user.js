@@ -1,4 +1,6 @@
+const { RolesType } = require('../fixtures/roles');
 const { hashText } = require('../utils/crypto');
+const { convertValuesToArray } = require('../utils/objects');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -20,6 +22,12 @@ module.exports = (sequelize, DataTypes) => {
       password: {
         allowNull: false,
         type: DataTypes.TEXT
+      },
+      role: {
+        allowNull: false,
+        defaultValue: RolesType.REGULAR,
+        type: DataTypes.STRING,
+        values: [...convertValuesToArray(RolesType)]
       }
     },
     { underscored: true }
