@@ -1,6 +1,6 @@
 const { databaseError } = require('../errors');
 const logger = require('../logger');
-const { user: UserModel } = require('../models');
+const { User: UserModel } = require('../models');
 const { getPagination } = require('../utils/pagination');
 
 const loggerPath = 'service:users';

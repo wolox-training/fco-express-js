@@ -3,7 +3,7 @@ const { default: Axios } = require('axios');
 const { urlApi } = require('../../config').common.geekJokesApi;
 const { databaseError, externalApiError } = require('../errors');
 const logger = require('../logger');
-const { weet: WeetModel } = require('../models');
+const { Weet: WeetModel } = require('../models');
 const { getPagination } = require('../utils/pagination');
 
 const loggerPath = 'service:weets';

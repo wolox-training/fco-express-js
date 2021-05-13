@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Weet = sequelize.define(
-    'weet',
+    'Weet',
     {
       content: {
         allowNull: false,
@@ -14,8 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     { underscored: true }
   );
 
-  Weet.associate = models => {
-    Weet.belongsTo(models.user);
+  Weet.associate = ({ User, Raiting }) => {
+    Weet.belongsTo(User);
+
+    Weet.belongsToMany(User, { through: Raiting });
   };
 
   return Weet;

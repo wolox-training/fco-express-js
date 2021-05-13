@@ -1,4 +1,4 @@
-const { RolesType } = require('../fixtures/roles');
+const { RolesType } = require('../fixtures/users');
 
 exports.usersSeeds = [
   {
