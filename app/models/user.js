@@ -38,5 +38,11 @@ module.exports = (sequelize, DataTypes) => {
     user.password = await hashText(user.password);
   });
 
+  User.associate = models => {
+    User.hasMany(models.weet, {
+      foreignKey: 'userId'
+    });
+  };
+
   return User;
 };
