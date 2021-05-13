@@ -9,7 +9,7 @@ module.exports = {
       defaultValue: PositionsType.DEVELOPER,
       type: Sequelize.STRING
     });
-    await queryInterface.createTable('raitings', {
+    await queryInterface.createTable('ratings', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -49,6 +49,6 @@ module.exports = {
 
   down: async queryInterface => {
     await queryInterface.removeColumn('users', 'position');
-    await queryInterface.dropTable('raitings');
+    await queryInterface.dropTable('ratings');
   }
 };

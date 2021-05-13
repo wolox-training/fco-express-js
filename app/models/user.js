@@ -39,10 +39,10 @@ module.exports = (sequelize, DataTypes) => {
     { underscored: true }
   );
 
-  User.associate = ({ Weet, Raiting }) => {
+  User.associate = ({ Weet, Rating }) => {
     User.hasMany(Weet, { foreignKey: 'userId' });
 
-    User.belongsToMany(Weet, { through: Raiting });
+    User.belongsToMany(Weet, { through: Rating });
   };
 
   User.beforeSave(async user => {
@@ -50,12 +50,12 @@ module.exports = (sequelize, DataTypes) => {
     user.password = await hashText(user.password);
   });
 
-  User.prototype.getPositionWith = puntaje => {
-    if (puntaje >= 50) return PositionsType.CEO;
-    else if (puntaje >= 30) return PositionsType.HEAD;
-    else if (puntaje >= 20) return PositionsType.EM;
-    else if (puntaje >= 10) return PositionsType.TL;
-    else if (puntaje >= 5) return PositionsType.LEAD;
+  User.prototype.getPositionWith = score => {
+    if (score >= 50) return PositionsType.CEO;
+    else if (score >= 30) return PositionsType.HEAD;
+    else if (score >= 20) return PositionsType.EM;
+    else if (score >= 10) return PositionsType.TL;
+    else if (score >= 5) return PositionsType.LEAD;
     return PositionsType.DEVELOPER;
   };
 

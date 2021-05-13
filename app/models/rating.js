@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const Raiting = sequelize.define(
-    'Raiting',
+  const Rating = sequelize.define(
+    'Rating',
     {
       userId: {
         allowNull: false,
@@ -19,5 +19,5 @@ module.exports = (sequelize, DataTypes) => {
     { underscored: true }
   );
 
-  return Raiting;
+  return Rating;
 };

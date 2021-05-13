@@ -14,10 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     { underscored: true }
   );
 
-  Weet.associate = ({ User, Raiting }) => {
+  Weet.associate = ({ User, Rating }) => {
     Weet.belongsTo(User);
 
-    Weet.belongsToMany(User, { through: Raiting });
+    Weet.belongsToMany(User, { through: Rating });
   };
 
   return Weet;
