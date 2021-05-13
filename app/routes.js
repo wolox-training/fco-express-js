@@ -1,5 +1,6 @@
 const { healthCheck } = require('./controllers/healthCheck');
 const { signUp, signUpAdmin, signIn, getUsers } = require('./controllers/users');
+const { postWeet } = require('./controllers/weets');
 const { signUpDto, signInDto, getUsersDto } = require('./dtos/users');
 const { isAuthenticated, isAdmin } = require('./middlewares/auth');
 const { mapSnakeToCamel } = require('./middlewares/mappers');
@@ -18,4 +19,7 @@ exports.init = app => {
   app.post('/users', [signUpDto, validationSchema, mapSnakeToCamel, existsEmail], signUp);
   app.post('/users/sessions', [signInDto, validationSchema], signIn);
   app.get('/users', [isAuthenticated, getUsersDto, validationSchema], getUsers);
+
+  // weet endpoints
+  app.post('/weets', [isAuthenticated], postWeet);
 };
