@@ -1,23 +1,11 @@
-const { badRequestError } = require('../errors');
-
-const validData = {
+const { content } = {
   content: {
     minLength: 3,
     maxLength: 140
   }
 };
 
-const { content } = validData;
-
-const validateContent = text => {
-  if (text.length < content.minLength || text.length > content.maxLength) {
-    throw badRequestError(
-      `content must be at least ${content.minLength} characters long and a maximun of ${content.maxLength}`
-    );
-  }
-};
-
-module.exports = {
-  validData,
-  validateContent
-};
+exports.validateContent = text =>
+  text.length >= content.minLength && text.length <= content.maxLength
+    ? text
+    : text.substring(0, content.maxLength);
