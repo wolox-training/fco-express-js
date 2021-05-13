@@ -4,6 +4,7 @@ const { urlApi } = require('../../config').common.geekJokesApi;
 const { databaseError, externalApiError } = require('../errors');
 const logger = require('../logger');
 const { weet: WeetModel } = require('../models');
+const { getPagination } = require('../utils/pagination');
 
 const loggerPath = 'service:weets';
 
@@ -26,5 +27,15 @@ exports.createWeet = async weetData => {
   } catch (error) {
     logger.error(`${loggerPath}:createWeet: ${error.message}`);
     throw databaseError('database error in createWeet');
+  }
+};
+
+exports.findAllWeets = async (page, limit) => {
+  try {
+    const weets = await WeetModel.findAll({ ...getPagination(page, limit) });
+    return weets;
+  } catch (error) {
+    logger.error(`${loggerPath}:findAllWeets: ${error.message}`);
+    throw databaseError('database error in findAllWeets');
   }
 };

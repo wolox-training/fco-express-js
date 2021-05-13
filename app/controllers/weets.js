@@ -1,6 +1,6 @@
 const logger = require('../logger');
-const { postWeetSerializer } = require('../serializers/weets');
-const { getQuote, createWeet } = require('../services/weets');
+const { postWeetSerializer, getWeetsSerializer } = require('../serializers/weets');
+const { getQuote, createWeet, findAllWeets } = require('../services/weets');
 const { mapToSerializer } = require('../utils/objects');
 const { validateContent } = require('../validations/weets');
 
@@ -21,6 +21,19 @@ exports.postWeet = async (req, res, next) => {
     return res.status(201).send(mapToSerializer(weet, postWeetSerializer));
   } catch (error) {
     logger.error(`${loggerPath}:postWeet: ${error.message}`);
+    return next(error);
+  }
+};
+
+exports.getWeets = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+    logger.info(`${loggerPath}:getWeets: starting method with page: ${page} and limit ${limit}`);
+
+    const weets = await findAllWeets(page, limit);
+    return res.status(200).send(mapToSerializer({ weets }, getWeetsSerializer));
+  } catch (error) {
+    logger.error(`${loggerPath}:getWeets: ${error.message}`);
     return next(error);
   }
 };
