@@ -2,6 +2,7 @@ const logger = require('../logger');
 const { postWeetSerializer, getWeetsSerializer } = require('../serializers/weets');
 const { getQuote, createWeet, findAllWeets } = require('../services/weets');
 const { mapToSerializer } = require('../utils/objects');
+const { validateContent } = require('../validations/weets');
 
 const loggerPath = 'controller:weet';
 
@@ -12,6 +13,7 @@ exports.postWeet = async (req, res, next) => {
     const { joke: content } = await getQuote();
     logger.info(`${loggerPath}:postWeet: continue method with content - ${JSON.stringify(content)}}`);
 
+    validateContent(content);
     const weetData = { content, userId };
     const weet = await createWeet(weetData);
     return res.status(201).send(mapToSerializer(weet, postWeetSerializer));
