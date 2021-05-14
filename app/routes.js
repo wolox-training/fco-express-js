@@ -1,8 +1,8 @@
 const { healthCheck } = require('./controllers/healthCheck');
 const { signUp, signUpAdmin, signIn, getUsers } = require('./controllers/users');
-const { postWeet, getWeets } = require('./controllers/weets');
+const { postWeet, getWeets, rateWeet } = require('./controllers/weets');
 const { signUpDto, signInDto, getUsersDto } = require('./dtos/users');
-const { getWeetsDto } = require('./dtos/weets');
+const { getWeetsDto, rateWeetDto } = require('./dtos/weets');
 const { isAuthenticated, isAdmin } = require('./middlewares/auth');
 const { mapSnakeToCamel } = require('./middlewares/mappers');
 const { existsEmail } = require('./middlewares/users');
@@ -24,4 +24,5 @@ exports.init = app => {
   // weet endpoints
   app.post('/weets', [isAuthenticated], postWeet);
   app.get('/weets', [isAuthenticated, getWeetsDto, validationSchema], getWeets);
+  app.post('/weets/:id/ratings', [isAuthenticated, rateWeetDto, validationSchema], rateWeet);
 };

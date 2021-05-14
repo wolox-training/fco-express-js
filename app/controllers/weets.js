@@ -1,5 +1,6 @@
 const logger = require('../logger');
 const { postWeetSerializer, getWeetsSerializer } = require('../serializers/weets');
+const { createOrUpdateRating } = require('../services/ratings');
 const { getQuote, createWeet, findAllWeets } = require('../services/weets');
 const { mapToSerializer } = require('../utils/objects');
 const { validateContent } = require('../validations/weets');
@@ -20,7 +21,6 @@ exports.postWeet = async (req, res, next) => {
     const weet = await createWeet(weetData);
     return res.status(201).send(mapToSerializer(weet, postWeetSerializer));
   } catch (error) {
-    logger.error(`${loggerPath}:postWeet: ${error.message}`);
     return next(error);
   }
 };
@@ -33,7 +33,24 @@ exports.getWeets = async (req, res, next) => {
     const weets = await findAllWeets(page, limit);
     return res.status(200).send(mapToSerializer({ weets }, getWeetsSerializer));
   } catch (error) {
-    logger.error(`${loggerPath}:getWeets: ${error.message}`);
+    return next(error);
+  }
+};
+
+exports.rateWeet = async (req, res, next) => {
+  try {
+    const {
+      body: { score },
+      params: { id: weetId },
+      user: { id: userId }
+    } = req;
+    logger.info(`${loggerPath}:rateWeet: starting method with userId: ${userId}`);
+    logger.info(`${loggerPath}:rateWeet: starting method with weetId: ${weetId}`);
+    logger.info(`${loggerPath}:rateWeet: starting method with score: ${score}`);
+
+    const createdOrUpdatedRating = await createOrUpdateRating(userId, weetId, score);
+    return res.status(200).send(createdOrUpdatedRating);
+  } catch (error) {
     return next(error);
   }
 };
