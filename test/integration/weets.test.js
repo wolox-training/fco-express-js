@@ -2,6 +2,8 @@ const request = require('supertest');
 
 const app = require('../../app');
 const { UNAUTHORIZED_ERROR, BAD_REQUEST_ERROR } = require('../../app/errors');
+const { PositionsType } = require('../../app/fixtures/users');
+const { findUserByEmail } = require('../../app/services/users');
 const { userMock } = require('../mocks/users');
 
 const server = request(app);
@@ -65,7 +67,7 @@ describe('weets endpoints', () => {
       });
     });
 
-    test("should fail when page or limit aren't integer", async done => {
+    test("should fail when page or limit aren't integer", async () => {
       const limit = '2a';
       const res = await server
         .get('/weets')
@@ -77,8 +79,86 @@ describe('weets endpoints', () => {
         message: expect.any(Object),
         internal_code: BAD_REQUEST_ERROR
       });
+    });
+  });
 
-      done();
+  describe('rateWeet endpoint', () => {
+    test("should fail when authorization header isn't passed", async () => {
+      const res = await server.post('/weets/1/ratings');
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toEqual({
+        message: expect.any(String),
+        internal_code: UNAUTHORIZED_ERROR
+      });
+    });
+
+    test('should fail when score is an illegal value', async () => {
+      const score = 0;
+      const res = await server
+        .post('/weets/1/ratings')
+        .set({ Authorization: accessToken })
+        .send({ score });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toEqual({
+        message: {
+          score: expect.any(Object)
+        },
+        internal_code: BAD_REQUEST_ERROR
+      });
+    });
+
+    test('should create rating successfully', async () => {
+      await server.post('/users').send(userMock);
+      const {
+        body: { id: weetId }
+      } = await server.post('/weets').set({ Authorization: accessToken });
+      const score = 1;
+
+      const res = await server
+        .post(`/weets/${weetId}/ratings`)
+        .set({ Authorization: accessToken })
+        .send({ score });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toEqual({
+        id: expect.any(Number),
+        user_id: expect.any(Number),
+        weet_id: expect.any(Number),
+        score: expect.any(Number),
+        updated_at: expect.any(String)
+      });
+    });
+
+    test('should change user position to Lead when get 5 of score for your weets', async () => {
+      await server.post('/users').send(userMock);
+
+      for (let i = 0; i < 5; i++) {
+        await server.post('/weets').set({ Authorization: accessToken });
+      }
+
+      const score = 1;
+
+      for (let weetId = 1; weetId <= 4; weetId++) {
+        await server
+          .post(`/weets/${weetId}/ratings`)
+          .set({ Authorization: accessToken })
+          .send({ score });
+      }
+
+      let foundUser = await findUserByEmail(userMock.email);
+
+      expect(foundUser.position).toBe(PositionsType.DEVELOPER);
+
+      await server
+        .post('/weets/5/ratings')
+        .set({ Authorization: accessToken })
+        .send({ score });
+
+      foundUser = await findUserByEmail(userMock.email);
+
+      expect(foundUser.position).toBe(PositionsType.LEAD);
     });
   });
 });
