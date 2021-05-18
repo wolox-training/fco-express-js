@@ -4,20 +4,31 @@ const { sequelize, User: UserModel, Rating: RatingModel, Weet: WeetModel } = req
 
 const loggerPath = 'service:ratings';
 
-exports.createOrUpdateRating = async (userId, weetId, score) => {
+exports.findRatingByUserAndWeet = async (userId, weetId) => {
+  try {
+    const foundRating = await RatingModel.findOne({ where: { userId, weetId } });
+    return foundRating;
+  } catch (error) {
+    logger.error(`${loggerPath}:findRatingByUserAndWeet: ${error.message}`);
+    throw databaseError('database error in findRatingByUserAndWeet');
+  }
+};
+
+exports.createOrUpdateRating = async (ratingData, foundRating) => {
   let transaction = {};
   try {
     transaction = await sequelize.transaction();
 
-    const foundRating = await RatingModel.findOne({ where: { userId, weetId }, transaction });
-    let createdOrUpdatedRating = {};
+    let createdOrUpdatedRating = null;
 
     if (foundRating) {
-      foundRating.score = score;
+      foundRating.score = ratingData.score;
       createdOrUpdatedRating = await foundRating.save({ transaction });
-    } else createdOrUpdatedRating = await RatingModel.create({ userId, weetId, score });
+    } else {
+      createdOrUpdatedRating = await RatingModel.create(ratingData, { transaction });
+    }
 
-    const foundWeetOfAuthor = await WeetModel.findByPk(weetId, { transaction });
+    const foundWeetOfAuthor = await WeetModel.findByPk(ratingData.weetId, { transaction });
     logger.info(
       `${loggerPath}:createOrUpdateRating: found weet of author is - ${JSON.stringify(foundWeetOfAuthor)}`
     );

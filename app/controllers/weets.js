@@ -1,6 +1,6 @@
 const logger = require('../logger');
-const { postWeetSerializer, getWeetsSerializer } = require('../serializers/weets');
-const { createOrUpdateRating } = require('../services/ratings');
+const { postWeetSerializer, getWeetsSerializer, rateWeetSerializer } = require('../serializers/weets');
+const { createOrUpdateRating, findRatingByUserAndWeet } = require('../services/ratings');
 const { getQuote, createWeet, findAllWeets } = require('../services/weets');
 const { mapToSerializer } = require('../utils/objects');
 const { validateContent } = require('../validations/weets');
@@ -44,12 +44,17 @@ exports.rateWeet = async (req, res, next) => {
       params: { id: weetId },
       user: { id: userId }
     } = req;
-    logger.info(`${loggerPath}:rateWeet: starting method with userId: ${userId}`);
-    logger.info(`${loggerPath}:rateWeet: starting method with weetId: ${weetId}`);
-    logger.info(`${loggerPath}:rateWeet: starting method with score: ${score}`);
+    const ratingData = { userId, weetId, score };
+    logger.info(`${loggerPath}:rateWeet: starting method with rating data: ${ratingData}`);
 
-    const createdOrUpdatedRating = await createOrUpdateRating(userId, weetId, score);
-    return res.status(200).send(createdOrUpdatedRating);
+    const foundRating = await findRatingByUserAndWeet(userId, weetId);
+
+    if (foundRating && foundRating.score === score) {
+      return res.status(201).send(mapToSerializer(foundRating, rateWeetSerializer));
+    }
+
+    const createdOrUpdatedRating = await createOrUpdateRating(ratingData, foundRating);
+    return res.status(201).send(mapToSerializer(createdOrUpdatedRating, rateWeetSerializer));
   } catch (error) {
     return next(error);
   }
