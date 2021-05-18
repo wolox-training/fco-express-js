@@ -34,6 +34,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: PositionsType.DEVELOPER,
         type: DataTypes.STRING,
         values: [...convertValuesToArray(PositionsType)]
+      },
+      authenticated: {
+        allowNull: false,
+        defaultValue: false,
+        type: DataTypes.BOOLEAN
       }
     },
     { underscored: true }

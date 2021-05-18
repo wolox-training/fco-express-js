@@ -48,3 +48,26 @@ exports.findAllUsers = async (page, limit) => {
     throw databaseError('database error in getUsers');
   }
 };
+
+exports.updateUser = async (userData, userId) => {
+  try {
+    const [, [updatedUser]] = await UserModel.update(userData, { where: { id: userId }, returning: true });
+    logger.info(`${loggerPath}:updateUser - updated user successfully: ${JSON.stringify(updatedUser)}`);
+
+    return updatedUser;
+  } catch (error) {
+    logger.error(`${loggerPath}:updateUser - database: ${error.message}`);
+    throw databaseError('database error in updateUser');
+  }
+};
+
+exports.findUserByIdAndAuthenticated = async userId => {
+  try {
+    const foundUser = await UserModel.findOne({ where: { id: userId, authenticated: true } });
+
+    return !!foundUser;
+  } catch (error) {
+    logger.error(`${loggerPath}:isAuthenticatedUser - database: ${error.message}`);
+    throw databaseError('database error in isAuthenticatedUser');
+  }
+};
