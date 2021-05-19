@@ -19,5 +19,10 @@ module.exports = (sequelize, DataTypes) => {
     { underscored: true }
   );
 
+  Rating.associate = ({ User, Weet }) => {
+    Rating.belongsTo(User);
+    Rating.belongsTo(Weet);
+  };
+
   return Rating;
 };

@@ -41,8 +41,7 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = ({ Weet, Rating }) => {
     User.hasMany(Weet, { foreignKey: 'userId' });
-
-    User.belongsToMany(Weet, { through: Rating });
+    User.hasMany(Rating, { foreignKey: 'userId' });
   };
 
   User.beforeSave(async user => {
