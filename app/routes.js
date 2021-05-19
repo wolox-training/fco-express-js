@@ -1,5 +1,5 @@
 const { healthCheck } = require('./controllers/healthCheck');
-const { signUp, signUpAdmin, signIn, getUsers } = require('./controllers/users');
+const { signUp, signUpAdmin, signIn, getUsers, signOut } = require('./controllers/users');
 const { postWeet, getWeets, rateWeet } = require('./controllers/weets');
 const { signUpDto, signInDto, getUsersDto } = require('./dtos/users');
 const { getWeetsDto, rateWeetDto } = require('./dtos/weets');
@@ -19,6 +19,7 @@ exports.init = app => {
   );
   app.post('/users', [signUpDto, validationSchema, mapSnakeToCamel, existsEmail], signUp);
   app.post('/users/sessions', [signInDto, validationSchema], signIn);
+  app.post('/users/sessions/invalidate_all', [isAuthenticated], signOut);
   app.get('/users', [isAuthenticated, getUsersDto, validationSchema], getUsers);
 
   // weet endpoints

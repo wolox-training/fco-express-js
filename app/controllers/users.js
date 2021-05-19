@@ -1,8 +1,19 @@
 const { badRequestError } = require('../errors');
 const { RolesType } = require('../fixtures/users');
 const logger = require('../logger');
-const { signUpSerializer, signInSerializer, getUsersSerializer } = require('../serializers/users');
-const { createUser, findAllUsers, findUserByEmail, createOrUpdateUser } = require('../services/users');
+const {
+  signUpSerializer,
+  signInSerializer,
+  getUsersSerializer,
+  signOutSerializer
+} = require('../serializers/users');
+const {
+  createUser,
+  findAllUsers,
+  findUserByEmail,
+  createOrUpdateUser,
+  updateUser
+} = require('../services/users');
 const { isOriginalText } = require('../utils/crypto');
 const { signPayload } = require('../utils/jwt');
 const { mapToSerializer } = require('../utils/objects');
@@ -56,12 +67,26 @@ exports.signIn = async (req, res, next) => {
 
     if (!isValidPassword) throw badRequestError('invalid credentials');
 
+    await updateUser({ authenticated: true }, id);
+
     const accessToken = signPayload(
       { user: id, name: `${name} ${lastName}`, role },
       { expiresIn: accessTokenExpirationTime }
     );
 
     return res.status(200).send(mapToSerializer({ accessToken }, signInSerializer));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.signOut = async (req, res, next) => {
+  try {
+    const { id: userId } = req.user;
+
+    const updatedUser = await updateUser({ authenticated: false }, userId);
+
+    return res.status(200).send(mapToSerializer(updatedUser, signOutSerializer));
   } catch (error) {
     return next(error);
   }

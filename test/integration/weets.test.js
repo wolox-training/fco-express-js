@@ -11,7 +11,7 @@ const server = request(app);
 describe('weets endpoints', () => {
   let accessToken = '';
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const { email, password } = userMock;
     await server.post('/users').send(userMock);
 
