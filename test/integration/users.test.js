@@ -69,7 +69,7 @@ describe('users endpoints', () => {
 
     let accessToken = '';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       const { email, password } = usersSeeds[0];
       await createUser(usersSeeds[0]);
       const res = await server.post('/users/sessions').send({ email, password });
@@ -169,10 +169,52 @@ describe('users endpoints', () => {
     });
   });
 
+  describe('signOut endpoint', () => {
+    let accessToken = '';
+
+    beforeEach(async () => {
+      const { email, password } = usersSeeds[0];
+      await createUser(usersSeeds[0]);
+      const res = await server.post('/users/sessions').send({ email, password });
+
+      accessToken = res.body.access_token;
+    });
+
+    test("should fail when access token isn't passed", async () => {
+      const res = await server.post('/users/sessions/invalidate_all');
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toEqual({
+        message: expect.any(String),
+        internal_code: UNAUTHORIZED_ERROR
+      });
+    });
+
+    test('should return authenticated property with false value', async () => {
+      const res = await server.post('/users/sessions/invalidate_all').set({ Authorization: accessToken });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        authenticated: false
+      });
+    });
+
+    test('should deauthenticate user after sign out session', async () => {
+      await server.post('/users/sessions/invalidate_all').set({ Authorization: accessToken });
+      const res = await server.post('/users/sessions/invalidate_all').set({ Authorization: accessToken });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toEqual({
+        message: expect.any(String),
+        internal_code: UNAUTHORIZED_ERROR
+      });
+    });
+  });
+
   describe('getUsers endpoint', () => {
     let accessToken = '';
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       const { email, password } = userMock;
       await server.post('/users').send(userMock);
 
