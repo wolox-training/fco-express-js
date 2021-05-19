@@ -1,6 +1,6 @@
 'use strict';
 
-const { RolesType } = require('../../app/fixtures/roles');
+const { RolesType } = require('../../app/fixtures/users');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {

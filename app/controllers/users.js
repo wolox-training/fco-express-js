@@ -1,5 +1,5 @@
 const { badRequestError } = require('../errors');
-const { RolesType } = require('../fixtures/roles');
+const { RolesType } = require('../fixtures/users');
 const logger = require('../logger');
 const { signUpSerializer, signInSerializer, getUsersSerializer } = require('../serializers/users');
 const { createUser, findAllUsers, findUserByEmail, createOrUpdateUser } = require('../services/users');

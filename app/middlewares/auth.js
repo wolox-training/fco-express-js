@@ -1,5 +1,5 @@
 const { forbiddenError, unauthorizedError } = require('../errors');
-const { RolesType } = require('../fixtures/roles');
+const { RolesType } = require('../fixtures/users');
 const logger = require('../logger');
 const { verifyToken } = require('../utils/jwt');
 
