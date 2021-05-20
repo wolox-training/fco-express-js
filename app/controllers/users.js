@@ -16,7 +16,7 @@ const {
 } = require('../services/users');
 const { isOriginalText } = require('../utils/crypto');
 const { signPayload } = require('../utils/jwt');
-const { mapToSerializer } = require('../utils/objects');
+const { plainToSerializer } = require('../utils/objects');
 const { accessTokenExpirationTime } = require('../../config').common.session.times;
 
 const loggerPath = 'controller:users';
@@ -27,7 +27,7 @@ exports.signUp = async (req, res, next) => {
     logger.info(`${loggerPath}:signUp: starting method with the next body ${JSON.stringify(userData)}`);
 
     const createdUser = await createUser(userData);
-    return res.status(201).send(mapToSerializer(createdUser, signUpSerializer));
+    return res.status(201).send(plainToSerializer(createdUser, signUpSerializer));
   } catch (error) {
     return next(error);
   }
@@ -41,7 +41,7 @@ exports.signUpAdmin = async (req, res, next) => {
 
     const createdOrUpdatedUser = await createOrUpdateUser(userData);
     logger.info(`${loggerPath}:signUpAdmin: createdOrUpdatedUser - ${JSON.stringify(createdOrUpdatedUser)}`);
-    return res.status(201).send(mapToSerializer(createdOrUpdatedUser, signUpSerializer));
+    return res.status(201).send(plainToSerializer(createdOrUpdatedUser, signUpSerializer));
   } catch (error) {
     return next(error);
   }
@@ -74,7 +74,7 @@ exports.signIn = async (req, res, next) => {
       { expiresIn: accessTokenExpirationTime }
     );
 
-    return res.status(200).send(mapToSerializer({ accessToken }, signInSerializer));
+    return res.status(200).send(plainToSerializer({ accessToken }, signInSerializer));
   } catch (error) {
     return next(error);
   }
@@ -86,7 +86,7 @@ exports.signOut = async (req, res, next) => {
 
     const updatedUser = await updateUser({ authenticated: false }, userId);
 
-    return res.status(200).send(mapToSerializer(updatedUser, signOutSerializer));
+    return res.status(200).send(plainToSerializer(updatedUser, signOutSerializer));
   } catch (error) {
     return next(error);
   }
@@ -98,7 +98,7 @@ exports.getUsers = async (req, res, next) => {
     logger.info(`${loggerPath}:getUsers: starting getUsers method with page: ${page} and limit ${limit}`);
 
     const users = await findAllUsers(page, limit);
-    return res.status(200).send(mapToSerializer({ users }, getUsersSerializer));
+    return res.status(200).send(plainToSerializer({ users }, getUsersSerializer));
   } catch (error) {
     return next(error);
   }
