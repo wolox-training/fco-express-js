@@ -25,9 +25,10 @@
     "migration-generate": "sequelize migration:create --config ./migrations/config.js --name",
     "migrations-undo-all": "sequelize db:migrate:undo:all",
     "start": "node server.js",
+    "prestart": "npm run migrations-undo-all && npm run migrations && npm run seed",
     "seed": "sequelize db:seed:all",
     "create-seed": "sequelize seed:generate --name"
-  },  
+  },
   "cacheDirectories": [
     "node_modules"
   ],
@@ -81,6 +82,7 @@
     "jwt-simple": "^0.5.1",
     "pg": "^7.4.1",
     "sequelize": "^5.21.5",
+    "sequelize-cli": "^5.5.1",
     "swagger-ui-express": "^4.0.7",
     "umzug": "^2.1.0"
   },
@@ -105,7 +107,6 @@
     "prettier": "^1.15.3",
     "prettier-eslint": "^9.0.1",
     "prompt": "^1.0.0",
-    "sequelize-cli": "^5.5.1",
     "supertest": "^4.0.2"
   },
   "husky": {
