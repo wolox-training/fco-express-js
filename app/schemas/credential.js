@@ -1,6 +1,6 @@
 const { email, password } = {
   email: {
-    woloxDomainRegex: /@wolox.co(m.(ar|mx))?/i
+    woloxDomainRegex: /@wolox.co(m.(ar|mx))?$/i
   },
   password: {
     minLength: 8,

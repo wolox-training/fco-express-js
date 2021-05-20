@@ -131,7 +131,7 @@ describe('weets endpoints', () => {
       });
     });
 
-    test('should change user position to Lead when get 5 of score for your weets', async () => {
+    test('should change user position to Lead when get 5 of score for your weets', async done => {
       await server.post('/users').send(userMock);
 
       for (let i = 0; i < 5; i++) {
@@ -159,6 +159,8 @@ describe('weets endpoints', () => {
       foundUser = await findUserByEmail(userMock.email);
 
       expect(foundUser.position).toBe(PositionsType.LEAD);
+
+      done();
     });
   });
 });
