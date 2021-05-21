@@ -50,6 +50,10 @@ const config = {
     },
     geekJokesApi: {
       urlApi: process.env.API_RANDOM_WEETS
+    },
+    mailer: {
+      user: process.env.MAILER_USER,
+      pass: process.env.MAILER_PASS
     }
   }
 };

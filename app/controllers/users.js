@@ -7,6 +7,7 @@ const {
   getUsersSerializer,
   signOutSerializer
 } = require('../serializers/users');
+const { sendEmail } = require('../services/emails');
 const {
   createUser,
   findAllUsers,
@@ -27,6 +28,13 @@ exports.signUp = async (req, res, next) => {
     logger.info(`${loggerPath}:signUp: starting method with the next body ${JSON.stringify(userData)}`);
 
     const createdUser = await createUser(userData);
+
+    sendEmail({
+      to: userData.email,
+      subject: 'Welcome to Witter!',
+      text: `We are delighted that you are here ${userData.name} ${userData.lastName}.`
+    });
+
     return res.status(201).send(plainToSerializer(createdUser, signUpSerializer));
   } catch (error) {
     return next(error);
@@ -38,6 +46,12 @@ exports.signUpAdmin = async (req, res, next) => {
     const { body: userData } = req;
     userData.role = RolesType.ADMIN;
     logger.info(`${loggerPath}:signUpAdmin: starting method with the next body ${JSON.stringify(userData)}`);
+
+    sendEmail({
+      to: userData.email,
+      subject: 'Welcome to Witter!',
+      text: `${userData.name} ${userData.lastName}, you have the power!`
+    });
 
     const createdOrUpdatedUser = await createOrUpdateUser(userData);
     logger.info(`${loggerPath}:signUpAdmin: createdOrUpdatedUser - ${JSON.stringify(createdOrUpdatedUser)}`);

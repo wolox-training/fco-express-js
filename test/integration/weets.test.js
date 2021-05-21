@@ -3,15 +3,22 @@ const request = require('supertest');
 const app = require('../../app');
 const { UNAUTHORIZED_ERROR, BAD_REQUEST_ERROR } = require('../../app/errors');
 const { PositionsType } = require('../../app/fixtures/users');
+const { sendEmail } = require('../../app/services/emails');
 const { findUserByEmail } = require('../../app/services/users');
 const { userMock } = require('../mocks/users');
 
 const server = request(app);
 
+jest.mock('../../app/services/emails', () => ({
+  sendEmail: jest.fn()
+}));
+
 describe('weets endpoints', () => {
   let accessToken = '';
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const { email, password } = userMock;
     await server.post('/users').send(userMock);
 
@@ -111,6 +118,9 @@ describe('weets endpoints', () => {
 
     test('should create rating successfully', async () => {
       await server.post('/users').send(userMock);
+
+      expect(sendEmail).toBeCalledTimes(1);
+
       const {
         body: { id: weetId }
       } = await server.post('/weets').set({ Authorization: accessToken });
@@ -133,6 +143,8 @@ describe('weets endpoints', () => {
 
     test('should change user position to Lead when get 5 of score for your weets', async done => {
       await server.post('/users').send(userMock);
+
+      expect(sendEmail).toBeCalledTimes(1);
 
       for (let i = 0; i < 5; i++) {
         await server.post('/weets').set({ Authorization: accessToken });

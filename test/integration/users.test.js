@@ -3,16 +3,26 @@ const request = require('supertest');
 const app = require('../../app');
 const { BAD_REQUEST_ERROR, UNAUTHORIZED_ERROR } = require('../../app/errors');
 const { usersSeeds } = require('../../app/seeds/users');
+const { sendEmail } = require('../../app/services/emails');
 const { createUser } = require('../../app/services/users');
 const { userMock } = require('../mocks/users');
 
 const server = request(app);
 
+jest.mock('../../app/services/emails', () => ({
+  sendEmail: jest.fn()
+}));
+
 describe('users endpoints', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('signUp regular endpoint', () => {
     test('should create a regular user successfully', async () => {
       const res = await server.post('/users').send(userMock);
 
+      expect(sendEmail).toBeCalledTimes(1);
       expect(res.statusCode).toBe(201);
       expect(res.body).toEqual({
         id: expect.any(Number),
@@ -83,6 +93,7 @@ describe('users endpoints', () => {
         .send(newAdmin)
         .set({ Authorization: accessToken });
 
+      expect(sendEmail).toBeCalledTimes(1);
       expect(res.statusCode).toBe(201);
       expect(res.body).toEqual({
         id: expect.any(Number),
