@@ -6,10 +6,14 @@ const { sendEmailToEveryUserJob } = require('./app/cron-jobs/users');
 
 const port = config.common.api.port || 8080;
 
+exports.setupServer = () => {
+  sendEmailToEveryUserJob(config.common.crons.dailyCongratsEmailsTime).start();
+};
+
 Promise.resolve()
   .then(() => migrationsManager.check())
   .then(() => {
-    sendEmailToEveryUserJob.start();
+    this.setupServer();
 
     app.listen(port);
 

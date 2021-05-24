@@ -54,6 +54,9 @@ const config = {
     mailer: {
       user: process.env.MAILER_USER,
       pass: process.env.MAILER_PASS
+    },
+    crons: {
+      dailyCongratsEmailsTime: '0 17 * * *'
     }
   }
 };
