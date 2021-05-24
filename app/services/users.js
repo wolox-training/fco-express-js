@@ -33,8 +33,8 @@ exports.findUserByEmail = async email => {
 
     return foundUser;
   } catch (error) {
-    logger.error(`${loggerPath}:findByEmail - database: ${error.message}`);
-    throw databaseError('database error in findByEmail');
+    logger.error(`${loggerPath}:findUserByEmail - database: ${error.message}`);
+    throw databaseError('database error in findUserByEmail');
   }
 };
 
@@ -44,8 +44,8 @@ exports.findAllUsers = async (page, limit) => {
 
     return users;
   } catch (error) {
-    logger.error(`${loggerPath}:getUsers - database: ${error.message}`);
-    throw databaseError('database error in getUsers');
+    logger.error(`${loggerPath}:findAllUsers - database: ${error.message}`);
+    throw databaseError('database error in findAllUsers');
   }
 };
 
